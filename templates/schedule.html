@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Daily Schedule</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #fce4ec);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #5c8df6;
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #5c6bc0;
+            font-size: 16px;
+            margin: 18px 0 10px;
+            font-weight: 500;
+        }
+
+        .schedule-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 22px 16px;
+            width: 140px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            border-top: 5px solid #ccc;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+        }
+
+        .card.done {
+            background: #f1f8e9;
+            border-top-color: #66bb6a !important;
+            opacity: 0.85;
+        }
+
+        .card.done::after {
+            content: "✅";
+            position: absolute;
+            top: -14px;
+            right: -10px;
+            font-size: 22px;
+        }
+
+        .card .emoji {
+            font-size: 46px;
+            margin-bottom: 10px;
+        }
+
+        .card .time {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card .label {
+            font-size: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Color coding per card */
+        .card-1 { border-top-color: #ffb74d; }
+        .card-2 { border-top-color: #4fc3f7; }
+        .card-3 { border-top-color: #81c784; }
+        .card-4 { border-top-color: #e57373; }
+        .card-5 { border-top-color: #ba68c8; }
+        .card-6 { border-top-color: #ff8a65; }
+        .card-7 { border-top-color: #4db6ac; }
+        .card-8 { border-top-color: #f06292; }
+        .card-9 { border-top-color: #7986cb; }
+
+        .progress-section {
+            text-align: center;
+            margin: 10px auto 5px;
+        }
+
+        .progress-bar-outer {
+            width: 60%;
+            max-width: 400px;
+            background: #ddd;
+            border-radius: 20px;
+            height: 18px;
+            margin: 8px auto;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(to right, #66bb6a, #43a047);
+            border-radius: 20px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .reward-msg {
+            display: none;
+            text-align: center;
+            font-size: 20px;
+            color: #e91e8c;
+            font-weight: bold;
+            margin: 10px;
+            animation: pop 0.4s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 10px auto 5px;
+            padding: 10px 28px;
+            background: #ef9a9a;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .reset-btn:hover { background: #e57373; }
+
+        .back-btn {
+            display: block;
+            width: fit-content;
+            margin: 10px auto 30px;
+            padding: 12px 30px;
+            background: #5c8df6;
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .back-btn:hover { background: #3a6fd8; }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">📅 My Daily Schedule</div>
+
+    <p class="subtitle">Tap each card when you finish that activity! ⭐</p>
+
+    <div class="progress-section">
+        <div class="progress-bar-outer">
+            <div class="progress-bar-inner" id="progress-bar"></div>
+        </div>
+        <p class="progress-text" id="progress-text">0 of 9 done</p>
+    </div>
+
+    <div class="reward-msg" id="reward-msg">🌟 Amazing! You completed your day! 🎉</div>
+
+    <div class="schedule-container" id="schedule">
+
+        <div class="card card-1" onclick="markDone(this)">
+            <div class="time">6:30 AM</div>
+            <div class="emoji">🌅</div>
+            <div class="label">Wake Up</div>
+        </div>
+
+        <div class="card card-2" onclick="markDone(this)">
+            <div class="time">6:45 AM</div>
+            <div class="emoji">🪥</div>
+            <div class="label">Brush Teeth</div>
+        </div>
+
+        <div class="card card-3" onclick="markDone(this)">
+            <div class="time">7:00 AM</div>
+            <div class="emoji">🍳</div>
+            <div class="label">Breakfast</div>
+        </div>
+
+        <div class="card card-4" onclick="markDone(this)">
+            <div class="time">8:00 AM</div>
+            <div class="emoji">🏫</div>
+            <div class="label">School</div>
+        </div>
+
+        <div class="card card-5" onclick="markDone(this)">
+            <div class="time">1:00 PM</div>
+            <div class="emoji">🍱</div>
+            <div class="label">Lunch</div>
+        </div>
+
+        <div class="card card-6" onclick="markDone(this)">
+            <div class="time">3:30 PM</div>
+            <div class="emoji">🎮</div>
+            <div class="label">Play Time</div>
+        </div>
+
+        <div class="card card-7" onclick="markDone(this)">
+            <div class="time">6:00 PM</div>
+            <div class="emoji">🛁</div>
+            <div class="label">Bath Time</div>
+        </div>
+
+        <div class="card card-8" onclick="markDone(this)">
+            <div class="time">7:00 PM</div>
+            <div class="emoji">🍽️</div>
+            <div class="label">Dinner</div>
+        </div>
+
+        <div class="card card-9" onclick="markDone(this)">
+            <div class="time">9:00 PM</div>
+            <div class="emoji">😴</div>
+            <div class="label">Sleep</div>
+        </div>
+
+    </div>
+
+    <button class="reset-btn" onclick="resetAll()">🔄 Reset Day</button>
+    <a href="/child" class="back-btn">⬅ Back to Chat</a>
+
+    <script>
+        const total = 9;
+
+        function markDone(card) {
+    card.classList.toggle("done");
+    let task = card.querySelector(".label").innerText;
+    let status = card.classList.contains("done") ? "done" : "not_done";
+    
+    fetch("/save-task", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task: task, status: status })
+    });
+    
+    updateProgress();
+}
+
+        function updateProgress() {
+            let done = document.querySelectorAll(".card.done").length;
+            let percent = Math.round((done / total) * 100);
+            document.getElementById("progress-bar").style.width = percent + "%";
+            document.getElementById("progress-text").innerText = done + " of " + total + " done";
+
+            let reward = document.getElementById("reward-msg");
+            if (done === total) {
+                reward.style.display = "block";
+            } else {
+                reward.style.display = "none";
+            }
+        }
+
+        function resetAll() {
+            document.querySelectorAll(".card").forEach(c => c.classList.remove("done"));
+            updateProgress();
+        }
+    </script>
+
+</body>
+</html>

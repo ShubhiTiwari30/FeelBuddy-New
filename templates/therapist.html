@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Therapist Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #eef4ff; padding: 30px 20px; }
+h2 { text-align: center; color: #3a3a5c; margin-bottom: 24px; }
+.section {
+    background: white; padding: 24px; border-radius: 18px;
+    max-width: 800px; margin: 0 auto 20px auto;
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+.summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 15px; margin-bottom: 0; }
+.box { background: #f8fbff; padding: 18px; border-radius: 14px; text-align: center; }
+.box h3 { font-size: 12px; color: gray; text-transform: uppercase; margin-bottom: 8px; }
+.box p { font-size: 24px; font-weight: bold; color: #3a3a5c; }
+.section h3 { font-size: 15px; color: #555; margin-bottom: 16px; font-weight: 600; }
+.insight-box {
+    background: #f0f7ff; border-left: 4px solid #5c8df6;
+    padding: 12px 16px; border-radius: 8px; font-size: 14px; color: #444;
+}
+.goal-input { display: flex; gap: 10px; margin-bottom: 12px; }
+.goal-input input {
+    flex: 1; padding: 10px 14px; border: 1px solid #ddd;
+    border-radius: 25px; font-size: 14px; outline: none;
+}
+.goal-input button {
+    padding: 10px 20px; background: #5c8df6; color: white;
+    border: none; border-radius: 25px; cursor: pointer; font-size: 14px;
+}
+.goal-item {
+    display: flex; align-items: center; gap: 10px;
+    background: #f8fbff; padding: 10px 14px; border-radius: 10px; margin-bottom: 8px;
+    font-size: 13px; color: #444;
+}
+.goal-item span { flex: 1; }
+.goal-done { background: #e8f5e9; color: #2e7d32; }
+.note-input { display: flex; gap: 10px; margin-bottom: 12px; }
+.note-input input {
+    flex: 1; padding: 10px 14px; border: 1px solid #ddd;
+    border-radius: 25px; font-size: 14px; outline: none;
+}
+.note-input button {
+    padding: 10px 20px; background: #7c6fff; color: white;
+    border: none; border-radius: 25px; cursor: pointer; font-size: 14px;
+}
+.note-item {
+    background: #faf8ff; border-left: 3px solid #7c6fff;
+    padding: 10px 14px; border-radius: 8px; margin-bottom: 8px;
+    font-size: 13px; color: #555;
+}
+.note-time { font-size: 11px; color: #aaa; margin-top: 4px; }
+.back-btn {
+    display: block; width: fit-content; margin: 0 auto;
+    padding: 10px 24px; background: #5c8df6; color: white;
+    border-radius: 8px; text-decoration: none; font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<h2>🩺 Therapist Portal</h2>
+
+<!-- Summary -->
+<div class="section">
+    <div class="summary">
+        <div class="box"><h3>Total Sessions</h3><p>{{ total }}</p></div>
+        <div class="box"><h3>Dominant Emotion</h3><p>{{ common }}</p></div>
+        <div class="box"><h3>Risk Flag</h3><p style="color:{% if risk == 'Moderate' %}#e57373{% else %}#66bb6a{% endif %}">{{ risk }}</p></div>
+    </div>
+</div>
+
+<!-- AI Insight -->
+<div class="section">
+    <h3>🧠 AI Insight</h3>
+    <div class="insight-box">{{ insight }}</div>
+</div>
+
+<!-- Mood Chart -->
+<div class="section">
+    <h3>📈 Mood Sessions Over Time</h3>
+    <canvas id="therapyChart"></canvas>
+</div>
+
+<!-- Weekly Goals -->
+<div class="section">
+    <h3>🎯 Weekly Goals</h3>
+    <div class="goal-input">
+        <input type="text" id="goal-input" placeholder="e.g. Greet one new person today">
+        <button onclick="addGoal()">Add Goal</button>
+    </div>
+    <div id="goals-list">Loading...</div>
+</div>
+
+<!-- Behavior Log -->
+<div class="section">
+    <h3>📝 Behavior Log</h3>
+    <div class="note-input">
+        <input type="text" id="note-input" placeholder="e.g. Arjun was calm during lunch today">
+        <button onclick="addNote()">Add Note</button>
+    </div>
+    <div id="notes-list">Loading...</div>
+</div>
+
+<br>
+<a href="/" class="back-btn">⬅ Back</a>
+
+<script>
+// Mood chart
+fetch('/dashboard-data')
+.then(r => r.json())
+.then(data => {
+    new Chart(document.getElementById('therapyChart'), {
+        type: 'line',
+        data: {
+            labels: data.daily_labels,
+            datasets: [{
+                label: 'Mood Sessions',
+                data: data.daily_counts,
+                borderColor: '#5c8df6',
+                backgroundColor: 'rgba(92,141,246,0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4
+            }]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+    });
+});
+
+// Load goals
+function loadGoals() {
+    fetch('/get-goals')
+    .then(r => r.json())
+    .then(data => {
+        let div = document.getElementById('goals-list');
+        if (data.goals.length === 0) {
+            div.innerHTML = '<span style="color:#999; font-size:13px;">No goals set yet</span>';
+        } else {
+            div.innerHTML = data.goals.map(g =>
+                `<div class="goal-item ${g.done ? 'goal-done' : ''}">
+                    <span>${g.done ? '✅' : '🎯'} ${g.goal}</span>
+                </div>`
+            ).join('');
+        }
+    });
+}
+
+// Add goal
+function addGoal() {
+    let input = document.getElementById('goal-input');
+    let goal = input.value.trim();
+    if (!goal) return;
+    fetch('/add-goal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ goal: goal })
+    }).then(() => {
+        input.value = '';
+        loadGoals();
+    });
+}
+
+// Load notes
+function loadNotes() {
+    fetch('/get-notes')
+    .then(r => r.json())
+    .then(data => {
+        let div = document.getElementById('notes-list');
+        if (data.notes.length === 0) {
+            div.innerHTML = '<span style="color:#999; font-size:13px;">No notes yet</span>';
+        } else {
+            div.innerHTML = data.notes.map(n =>
+                `<div class="note-item">
+                    ${n.note}
+                    <div class="note-time">${n.timestamp}</div>
+                </div>`
+            ).join('');
+        }
+    });
+}
+
+// Add note
+function addNote() {
+    let input = document.getElementById('note-input');
+    let note = input.value.trim();
+    if (!note) return;
+    fetch('/add-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note: note })
+    }).then(() => {
+        input.value = '';
+        loadNotes();
+    });
+}
+
+loadGoals();
+loadNotes();
+</script>
+
+</body>
+</html>

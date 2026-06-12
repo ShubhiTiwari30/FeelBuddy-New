@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Communication Cards</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #e1f5fe);
+            margin: 0;
+            text-align: center;
+        }
+
+        .header {
+            background: #5c8df6;
+            color: white;
+            padding: 15px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #3a3a5c;
+            margin: 20px 0 10px;
+        }
+
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 16px;
+            width: 130px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.08);
+        }
+
+        .card .emoji {
+            font-size: 42px;
+        }
+
+        .card .label {
+            font-size: 14px;
+            margin-top: 8px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .response-box {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 16px 24px;
+            max-width: 400px;
+            margin: 10px auto;
+            font-size: 16px;
+            color: #3a3a5c;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin: 20px auto;
+            padding: 12px 28px;
+            background: #5c8df6;
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">🖼️ Communication Cards</div>
+
+    <h2>How are you feeling? Tap a card!</h2>
+
+    <div class="grid">
+        <div class="card" onclick="express('I am happy 😊', 'joy')">
+            <div class="emoji">😊</div>
+            <div class="label">Happy</div>
+        </div>
+        <div class="card" onclick="express('I feel sad 😢', 'sad')">
+            <div class="emoji">😢</div>
+            <div class="label">Sad</div>
+        </div>
+        <div class="card" onclick="express('I am angry 😡', 'anger')">
+            <div class="emoji">😡</div>
+            <div class="label">Angry</div>
+        </div>
+        <div class="card" onclick="express('I feel scared 😨', 'fear')">
+            <div class="emoji">😨</div>
+            <div class="label">Scared</div>
+        </div>
+        <div class="card" onclick="express('I need a break 🙏', 'neutral')">
+            <div class="emoji">🙏</div>
+            <div class="label">Need a break</div>
+        </div>
+        <div class="card" onclick="express('It is too loud 🔊', 'fear')">
+            <div class="emoji">🔊</div>
+            <div class="label">Too loud</div>
+        </div>
+        <div class="card" onclick="express('I am hungry 🍽️', 'neutral')">
+            <div class="emoji">🍽️</div>
+            <div class="label">Hungry</div>
+        </div>
+        <div class="card" onclick="express('I am tired 😴', 'neutral')">
+            <div class="emoji">😴</div>
+            <div class="label">Tired</div>
+        </div>
+        <div class="card" onclick="express('I want to play 🎮', 'joy')">
+            <div class="emoji">🎮</div>
+            <div class="label">Want to play</div>
+        </div>
+        <div class="card" onclick="express('I need help 🆘', 'fear')">
+            <div class="emoji">🆘</div>
+            <div class="label">Need help</div>
+        </div>
+        <div class="card" onclick="express('I feel sick 🤒', 'sad')">
+            <div class="emoji">🤒</div>
+            <div class="label">Feel sick</div>
+        </div>
+        <div class="card" onclick="express('I want to go home 🏠', 'neutral')">
+            <div class="emoji">🏠</div>
+            <div class="label">Go home</div>
+        </div>
+    </div>
+
+    <div class="response-box" id="response-box">
+        🤖 <span id="response-text"></span>
+    </div>
+
+    <a href="/child" class="back-btn">⬅ Back to Chat</a>
+
+    <script>
+        const replies = {
+            "joy": "That's wonderful! I'm so glad you're feeling that way 😊",
+            "sad": "I'm sorry you feel that way 💛 Do you want to talk about it?",
+            "anger": "It's okay to feel angry. Let's take a deep breath together 🌬️",
+            "fear": "You are safe here. I'm with you 💙",
+            "neutral": "Thank you for telling me! I'm here for you 🤗"
+        };
+
+        function express(message, emotion) {
+            fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.redirect_calm) {
+                    window.location.href = "/calm";
+                    return;
+                }
+                let box = document.getElementById("response-box");
+                let text = document.getElementById("response-text");
+                text.innerText = data.reply;
+                box.style.display = "block";
+            });
+        }
+    </script>
+
+</body>
+</html>

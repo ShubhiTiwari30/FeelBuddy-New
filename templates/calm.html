@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calm Corner 🧘</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* ── STARS BACKGROUND ── */
+        .stars {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50%       { opacity: 1; }
+        }
+
+        /* ── CONTENT ── */
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(100,180,255,0.6);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #a0c4ff;
+            font-weight: 600;
+        }
+
+        /* ── BREATHING CIRCLE ── */
+        .circle-wrap {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 10px auto;
+        }
+
+        /* Outer glow ring */
+        .glow-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: transparent;
+            border: 3px solid rgba(100,180,255,0.3);
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+
+        .glow-ring-2 {
+            width: 260px;
+            height: 260px;
+            border-color: rgba(100,180,255,0.15);
+            animation-delay: 0.5s;
+        }
+
+        .glow-ring-3 {
+            width: 300px;
+            height: 300px;
+            border-color: rgba(100,180,255,0.08);
+            animation-delay: 1s;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+            50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+        }
+
+        /* Main circle */
+        .circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #64b4ff, #3a7bd5, #1a3a6e);
+            box-shadow:
+                0 0 40px rgba(100,180,255,0.6),
+                0 0 80px rgba(100,180,255,0.3),
+                0 0 120px rgba(100,180,255,0.15);
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%   { transform: translate(-50%, -50%) scale(1);    box-shadow: 0 0 40px rgba(100,180,255,0.5), 0 0 80px rgba(100,180,255,0.2); }
+            50%  { transform: translate(-50%, -50%) scale(1.35); box-shadow: 0 0 70px rgba(100,180,255,0.9), 0 0 120px rgba(100,180,255,0.5), 0 0 160px rgba(100,180,255,0.2); }
+            100% { transform: translate(-50%, -50%) scale(1);    box-shadow: 0 0 40px rgba(100,180,255,0.5), 0 0 80px rgba(100,180,255,0.2); }
+        }
+
+        /* Inhale/Exhale text inside circle */
+        .circle-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            animation: textSwitch 4s ease-in-out infinite;
+        }
+
+        @keyframes textSwitch {
+            0%, 45%  { opacity: 1; content: "INHALE"; }
+            50%, 95% { opacity: 1; }
+            47%, 53% { opacity: 0; }
+        }
+
+        /* ── BREATH INSTRUCTION ── */
+        .breath-msg {
+            font-size: 20px;
+            font-weight: 700;
+            color: #a0c4ff;
+            letter-spacing: 1px;
+            animation: msgFade 4s ease-in-out infinite;
+            min-height: 30px;
+        }
+
+        @keyframes msgFade {
+            0%, 40%  { opacity: 1; }
+            50%      { opacity: 0.3; }
+            60%, 100%{ opacity: 1; }
+        }
+
+        .safe-msg {
+            font-size: 17px;
+            color: #c8e6ff;
+            font-weight: 600;
+        }
+
+        /* ── TIPS ── */
+        .tips {
+            display: flex;
+            gap: 12px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tip-card {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px 18px;
+            color: #c8e6ff;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tip-card:hover {
+            background: rgba(100,180,255,0.15);
+            transform: translateY(-3px);
+        }
+
+        /* ── BACK BUTTON ── */
+        .back-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 13px 32px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(100,180,255,0.25);
+            border-color: rgba(100,180,255,0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(100,180,255,0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- STARS -->
+    <div class="stars" id="stars"></div>
+
+    <div class="content">
+
+        <div class="title">🧘 Calm Corner</div>
+        <div class="subtitle">You are safe here. Let's breathe together 💙</div>
+
+        <!-- BREATHING CIRCLE -->
+        <div class="circle-wrap">
+            <div class="glow-ring glow-ring-3"></div>
+            <div class="glow-ring glow-ring-2"></div>
+            <div class="glow-ring"></div>
+            <div class="circle"></div>
+            <div class="circle-text" id="breath-label">INHALE</div>
+        </div>
+
+        <!-- BREATH MESSAGE -->
+        <div class="breath-msg" id="breath-msg">Breathe in slowly... 🌬️</div>
+
+        <div class="safe-msg">Inhale... Exhale... You are safe 💙</div>
+
+        <!-- CALMING TIPS -->
+        <div class="tips">
+            <div class="tip-card">🌊 Think of ocean waves</div>
+            <div class="tip-card">⭐ Count 5 stars</div>
+            <div class="tip-card">🌈 Picture your happy place</div>
+        </div>
+
+        <a href="/child" class="back-btn">⬅ Back to Chat</a>
+
+    </div>
+
+    <script>
+        // Generate stars
+        const starsContainer = document.getElementById("stars");
+        for (let i = 0; i < 80; i++) {
+            let star = document.createElement("div");
+            star.className = "star";
+            let size = Math.random() * 3 + 1;
+            star.style.cssText = `
+                width: ${size}px;
+                height: ${size}px;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                animation-delay: ${Math.random() * 3}s;
+                animation-duration: ${2 + Math.random() * 3}s;
+            `;
+            starsContainer.appendChild(star);
+        }
+
+        // Inhale / Exhale text switch
+        const label = document.getElementById("breath-label");
+        const msg   = document.getElementById("breath-msg");
+
+        let inhale = true;
+        setInterval(() => {
+            inhale = !inhale;
+            if (inhale) {
+                label.textContent = "INHALE";
+                msg.textContent   = "Breathe in slowly... 🌬️";
+            } else {
+                label.textContent = "EXHALE";
+                msg.textContent   = "Let it all out... 😮‍💨";
+            }
+        }, 4000);
+    </script>
+
+</body>
+</html>

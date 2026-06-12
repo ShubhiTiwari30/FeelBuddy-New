@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FeelBuddy 💛</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #e8eaf6 50%, #fce4ec 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(90deg, #5c8df6, #7c6ff7);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(92,141,246,0.4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header span {
+            font-size: 28px;
+            margin-right: 8px;
+        }
+
+        /* ── NAV ── */
+        .nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 10px;
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .nav a {
+            text-decoration: none;
+        }
+
+        .nav button {
+            padding: 9px 16px;
+            border: none;
+            border-radius: 25px;
+            background: white;
+            color: #5c8df6;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .nav button:hover {
+            background: #5c8df6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(92,141,246,0.4);
+        }
+
+        /* ── EMOTION INDICATOR ── */
+        .emotion-indicator {
+            text-align: center;
+            margin: 14px auto 4px;
+            padding: 10px 24px;
+            background: white;
+            border-radius: 30px;
+            display: inline-block;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            font-size: 15px;
+            font-weight: 700;
+            color: #555;
+            transition: all 0.4s ease;
+        }
+
+        .emotion-indicator-wrap {
+            text-align: center;
+        }
+
+        .emotion-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 8px;
+            background: #e8f5e9;
+            color: #388e3c;
+            transition: all 0.3s;
+        }
+
+        .badge-joy     { background: #fff9c4; color: #f57f17; }
+        .badge-sad     { background: #e3f2fd; color: #1565c0; }
+        .badge-anger   { background: #fce4ec; color: #c62828; }
+        .badge-fear    { background: #f3e5f5; color: #6a1b9a; }
+        .badge-neutral { background: #e8f5e9; color: #2e7d32; }
+
+        /* ── CHATBOX ── */
+        .chat-wrap {
+            width: 92%;
+            max-width: 540px;
+            margin: 10px auto;
+            flex: 1;
+        }
+
+        #chatbox {
+            width: 100%;
+            height: 340px;
+            padding: 16px;
+            background: white;
+            border-radius: 24px;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            scroll-behavior: smooth;
+        }
+
+        /* Scrollbar */
+        #chatbox::-webkit-scrollbar { width: 6px; }
+        #chatbox::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        #chatbox::-webkit-scrollbar-thumb { background: #c5cae9; border-radius: 10px; }
+
+        .user {
+            background: linear-gradient(135deg, #5c8df6, #7c6ff7);
+            color: white;
+            padding: 11px 16px;
+            border-radius: 20px 20px 4px 20px;
+            align-self: flex-end;
+            max-width: 78%;
+            word-wrap: break-word;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 3px 8px rgba(92,141,246,0.3);
+            animation: slideRight 0.3s ease;
+        }
+
+        .bot {
+            background: #f1f8e9;
+            color: #333;
+            padding: 11px 16px;
+            border-radius: 20px 20px 20px 4px;
+            align-self: flex-start;
+            max-width: 78%;
+            word-wrap: break-word;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+            border-left: 4px solid #a5d6a7;
+            animation: slideLeft 0.3s ease;
+        }
+
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Typing indicator */
+        .typing {
+            display: flex;
+            gap: 5px;
+            padding: 12px 16px;
+            background: #f1f8e9;
+            border-radius: 20px 20px 20px 4px;
+            align-self: flex-start;
+            border-left: 4px solid #a5d6a7;
+            width: fit-content;
+        }
+
+        .typing span {
+            width: 8px;
+            height: 8px;
+            background: #81c784;
+            border-radius: 50%;
+            animation: bounce 1s infinite;
+        }
+
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        /* ── EMOJI BUTTONS ── */
+        .emotion-buttons {
+            text-align: center;
+            margin: 10px 0 6px;
+        }
+
+        .emotion-buttons button {
+            font-size: 26px;
+            margin: 4px;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            background: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+            transition: all 0.2s;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .emotion-buttons button:hover {
+            transform: scale(1.2) translateY(-3px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+        }
+
+        .emotion-label {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            font-weight: 600;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ── INPUT BOX ── */
+        .input-wrap {
+            width: 92%;
+            max-width: 540px;
+            margin: 8px auto 20px;
+        }
+
+        .input-box {
+            display: flex;
+            gap: 8px;
+            background: white;
+            border-radius: 30px;
+            padding: 6px 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .input-box input {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            outline: none;
+            background: transparent;
+            color: #333;
+        }
+
+        .input-box input::placeholder {
+            color: #bbb;
+            font-weight: 500;
+        }
+
+        .btn-send {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #5c8df6, #7c6ff7);
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(92,141,246,0.4);
+        }
+
+        .btn-voice {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 25px;
+            background: #fce4ec;
+            color: #e91e63;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .btn-voice:hover {
+            background: #e91e63;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-voice.listening {
+            background: #e91e63;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <span>💛</span> FeelBuddy
+    </div>
+
+    <!-- NAV -->
+    <div class="nav">
+        <a href="/dashboard"><button>📊 Dashboard</button></a>
+        <a href="/calm"><button>🧘 Calm Corner</button></a>
+        <a href="/aac"><button>🖼️ AAC Cards</button></a>
+        <a href="/schedule"><button>📅 My Schedule</button></a>
+    </div>
+
+    <!-- LIVE EMOTION INDICATOR -->
+    <div class="emotion-indicator-wrap">
+        <div class="emotion-indicator" id="emotion-indicator">
+            Current mood: <span class="emotion-badge badge-neutral" id="emotion-badge">😊 Neutral</span>
+        </div>
+    </div>
+
+    <!-- CHATBOX -->
+    <div class="chat-wrap">
+        <div id="chatbox"></div>
+    </div>
+
+    <!-- QUICK EMOJI BUTTONS -->
+    <div class="emotion-label">Quick Express</div>
+    <div class="emotion-buttons">
+        <button onclick="quickSend('I am happy')"    title="Happy">😊</button>
+        <button onclick="quickSend('I feel sad')"    title="Sad">😢</button>
+        <button onclick="quickSend('I am angry')"    title="Angry">😡</button>
+        <button onclick="quickSend('I feel scared')" title="Scared">😨</button>
+        <button onclick="quickSend('I feel excited')" title="Excited">🤩</button>
+        <button onclick="quickSend('I need a hug')"  title="Need comfort">🤗</button>
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-wrap">
+        <div class="input-box">
+            <input type="text" id="message"
+                placeholder="Tell me how you feel..."
+                onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="btn-voice" id="voice-btn" onclick="startVoice()" title="Voice input">🎤</button>
+            <button class="btn-send" onclick="sendMessage()">Send 💬</button>
+        </div>
+    </div>
+
+    <script>
+        const emotionMap = {
+            joy:     { label: "😊 Happy",   cls: "badge-joy"     },
+            sad:     { label: "😢 Sad",     cls: "badge-sad"     },
+            anger:   { label: "😡 Angry",   cls: "badge-anger"   },
+            fear:    { label: "😨 Scared",  cls: "badge-fear"    },
+            neutral: { label: "😊 Neutral", cls: "badge-neutral" }
+        };
+
+        window.onload = function() {
+            addBotMessage("Hello! I am FeelBuddy 💛 Tell me how you are feeling today!");
+        };
+
+        function addBotMessage(text) {
+            let chatbox = document.getElementById("chatbox");
+            let div = document.createElement("div");
+            div.className = "bot";
+            div.innerHTML = "🤖 " + text;
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function addUserMessage(text) {
+            let chatbox = document.getElementById("chatbox");
+            let div = document.createElement("div");
+            div.className = "user";
+            div.innerHTML = "👤 " + text;
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function showTyping() {
+            let chatbox = document.getElementById("chatbox");
+            let div = document.createElement("div");
+            div.className = "typing";
+            div.id = "typing-indicator";
+            div.innerHTML = "<span></span><span></span><span></span>";
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function removeTyping() {
+            let t = document.getElementById("typing-indicator");
+            if (t) t.remove();
+        }
+
+        function updateEmotionBadge(emotion) {
+            let badge = document.getElementById("emotion-badge");
+            let info = emotionMap[emotion] || emotionMap["neutral"];
+            badge.textContent = info.label;
+            badge.className = "emotion-badge " + info.cls;
+        }
+
+        function sendMessage() {
+            let message = document.getElementById("message").value.trim();
+            if (!message) return;
+
+            addUserMessage(message);
+            document.getElementById("message").value = "";
+            showTyping();
+
+            fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                removeTyping();
+                if (data.redirect_calm) {
+                    window.location.href = "/calm";
+                    return;
+                }
+                updateEmotionBadge(data.emotion);
+                addBotMessage(data.reply);
+            })
+            .catch(() => {
+                removeTyping();
+                addBotMessage("Oops! Something went wrong. Please try again 💛");
+            });
+        }
+
+        function quickSend(text) {
+            document.getElementById("message").value = text;
+            sendMessage();
+        }
+
+        function startVoice() {
+            const btn = document.getElementById("voice-btn");
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "en-US";
+            recognition.start();
+            btn.classList.add("listening");
+            btn.textContent = "🔴";
+
+            recognition.onresult = function(event) {
+                const voiceText = event.results[0][0].transcript;
+                document.getElementById("message").value = voiceText;
+                btn.classList.remove("listening");
+                btn.textContent = "🎤";
+                sendMessage();
+            };
+
+            recognition.onerror = function() {
+                btn.classList.remove("listening");
+                btn.textContent = "🎤";
+                alert("Voice not supported. Please type instead.");
+            };
+        }
+    </script>
+
+</body>
+</html>

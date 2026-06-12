@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FeelBuddy Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4ff;
+            padding: 30px 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #3a3a5c;
+            font-size: 22px;
+            margin-bottom: 24px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            max-width: 800px;
+            margin: 0 auto 24px auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 24px;
+            font-weight: 600;
+            color: #3a3a5c;
+        }
+
+        .chart-box {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .chart-box h3 {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 30px auto;
+            padding: 10px 24px;
+            background: #6c8fff;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📊 FeelBuddy Dashboard</h2>
+
+    <div class="grid">
+        <div class="card">
+            <h3>Total Messages</h3>
+            <p>{{ total }}</p>
+        </div>
+        <div class="card">
+            <h3>Most Common</h3>
+            <p>{{ common }}</p>
+        </div>
+        <div class="card">
+            <h3>Insight</h3>
+            <p style="font-size:13px; color:#666;">{{ insight }}</p>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="chart-box">
+        <h3>🔔 Today's Alerts</h3>
+        <div id="alert-content">Loading...</div>
+    </div>
+
+    <!-- Schedule Progress -->
+    <div class="chart-box">
+        <h3>📅 Today's Schedule Progress</h3>
+        <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+            <div style="flex:1; background:#eee; border-radius:20px; height:18px; overflow:hidden;">
+                <div id="sched-bar" style="height:100%; background:linear-gradient(to right,#66bb6a,#43a047); border-radius:20px; width:0%; transition:width 0.4s;"></div>
+            </div>
+            <span id="sched-text" style="font-size:14px; color:#555; white-space:nowrap;">Loading...</span>
+        </div>
+        <div id="sched-tasks" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="chart-box">
+        <h3>Emotion Distribution</h3>
+        <canvas id="barChart"></canvas>
+    </div>
+
+    <!-- Line chart -->
+    <div class="chart-box">
+        <h3>Messages Over Time</h3>
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <a href="/" class="back-btn">⬅ Back</a>
+
+    <script>
+        // Alerts
+        fetch('/alerts')
+            .then(res => res.json())
+            .then(data => {
+                let div = document.getElementById('alert-content');
+                if (data.alerts.length === 0) {
+                    div.innerHTML = '<span style="color:#4caf50; font-size:13px;">No alerts today 🟢 Child is doing well!</span>';
+                } else {
+                    div.innerHTML = data.alerts.map(a =>
+                        '<div style="background:#fff3e0; border-left:4px solid #ff9800; padding:10px 14px; border-radius:8px; margin-bottom:8px; font-size:13px; color:#555;">⚠️ ' + a + '</div>'
+                    ).join('');
+                }
+            });
+
+        // Schedule progress
+        fetch('/schedule-progress')
+            .then(res => res.json())
+            .then(data => {
+                let percent = Math.round((data.done / data.total) * 100);
+                document.getElementById('sched-bar').style.width = percent + '%';
+                document.getElementById('sched-text').innerText = data.done + ' of ' + data.total + ' tasks done today';
+
+                let tasksDiv = document.getElementById('sched-tasks');
+                if (data.tasks.length === 0) {
+                    tasksDiv.innerHTML = '<span style="color:#999; font-size:13px;">No tasks completed yet today</span>';
+                } else {
+                    data.tasks.forEach(task => {
+                        tasksDiv.innerHTML += '<span style="background:#e8f5e9; color:#2e7d32; padding:4px 12px; border-radius:20px; font-size:13px;">✅ ' + task + '</span>';
+                    });
+                }
+            });
+
+        // Emotion charts
+        fetch('/dashboard-data')
+            .then(res => res.json())
+            .then(data => {
+                new Chart(document.getElementById('barChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Count',
+                            data: data.counts,
+                            backgroundColor: [
+                                '#a78bfa','#60a5fa','#f87171',
+                                '#34d399','#fbbf24','#f472b6'
+                            ],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+
+                new Chart(document.getElementById('lineChart'), {
+                    type: 'line',
+                    data: {
+                        labels: data.daily_labels,
+                        datasets: [{
+                            label: 'Messages',
+                            data: data.daily_counts,
+                            borderColor: '#6c8fff',
+                            backgroundColor: 'rgba(108,143,255,0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            });
+    </script>
+
+</body>
+</html>

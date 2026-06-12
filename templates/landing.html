@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FeelBuddy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f0ff 0%, #f3e8ff 50%, #fce4ec 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo .emoji {
+            font-size: 56px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .logo h1 {
+            font-size: 38px;
+            font-weight: 700;
+            color: #3a3a5c;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            font-size: 16px;
+            color: #7a7a9a;
+            margin-top: 8px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 900px;
+        }
+
+        .role-card {
+            background: white;
+            border-radius: 24px;
+            padding: 36px 28px;
+            width: 240px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.25s, box-shadow 0.25s;
+            border-top: 5px solid transparent;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.14);
+        }
+
+        .role-card.child { border-top-color: #60a5fa; }
+        .role-card.parent { border-top-color: #34d399; }
+        .role-card.therapist { border-top-color: #a78bfa; }
+
+        .role-card .card-emoji {
+            font-size: 52px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .role-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3a3a5c;
+            margin-bottom: 10px;
+        }
+
+        .role-card p {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .enter-btn {
+            display: inline-block;
+            padding: 10px 28px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .enter-btn:hover { opacity: 0.85; }
+
+        .child .enter-btn { background: #60a5fa; }
+        .parent .enter-btn { background: #34d399; }
+        .therapist .enter-btn { background: #a78bfa; }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo">
+        <span class="emoji">💛</span>
+        <h1>FeelBuddy</h1>
+        <p>Your safe space to express yourself</p>
+    </div>
+
+    <div class="cards">
+
+        <div class="role-card child" onclick="goTo('child')">
+            <span class="card-emoji">🧒</span>
+            <h2>I am a Child</h2>
+            <p>Talk about your feelings, play games, and feel better every day</p>
+            <button class="enter-btn">Let's Go! →</button>
+        </div>
+
+        <div class="role-card parent" onclick="goTo('parent')">
+            <span class="card-emoji">👨‍👩‍👧</span>
+            <h2>I am a Parent</h2>
+            <p>Track your child's mood, daily progress, and get helpful alerts</p>
+            <button class="enter-btn">View Dashboard →</button>
+        </div>
+
+        <div class="role-card therapist" onclick="goTo('therapist')">
+            <span class="card-emoji">👩‍⚕️</span>
+            <h2>I am a Therapist</h2>
+            <p>Set goals, log behavior observations, and monitor patterns</p>
+            <button class="enter-btn">Open Portal →</button>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        FeelBuddy — Supporting autism one step at a time 💙
+    </div>
+
+    <script>
+        function goTo(role) {
+            if (role === "child") {
+                window.location.href = "/child";
+            } else if (role === "parent") {
+                window.location.href = "/dashboard";
+            } else if (role === "therapist") {
+                window.location.href = "/therapist";
+            }
+        }
+    </script>
+
+</body>
+</html>
